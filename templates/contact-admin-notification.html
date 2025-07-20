@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Contact Form Submission</title>
+  </head>
+  <body
+    style="
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+      color: #333;
+    "
+  >
+    <div
+      style="
+        max-width: 600px;
+        margin: auto;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <div
+        style="
+          text-align: center;
+          border-bottom: 1px solid #ddd;
+          padding-bottom: 20px;
+          margin-bottom: 20px;
+        "
+      >
+        <h1 style="color: #2c5222; font-size: 24px">
+          New Message from DhanaLaxmi Foods Website
+        </h1>
+      </div>
+
+      <p style="font-size: 16px; color: #555; line-height: 1.6">
+        You have received a new message through your website's contact form.
+        Here are the details:
+      </p>
+
+      <div
+        style="
+          background-color: #f9f9f9;
+          border: 1px solid #eee;
+          border-radius: 5px;
+          padding: 20px;
+          margin-top: 20px;
+        "
+      >
+        <table style="width: 100%; border-collapse: collapse">
+          <tr style="border-bottom: 1px solid #eee">
+            <td style="padding: 10px; font-weight: bold; width: 100px">
+              From:
+            </td>
+            <td style="padding: 10px">{{USER_NAME}}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #eee">
+            <td style="padding: 10px; font-weight: bold">Email:</td>
+            <td style="padding: 10px">
+              <a
+                href="mailto:{{USER_EMAIL}}"
+                style="color: #007bff; text-decoration: none"
+                >{{USER_EMAIL}}</a
+              >
+            </td>
+          </tr>
+          <tr style="border-bottom: 1px solid #eee">
+            <td style="padding: 10px; font-weight: bold">Subject:</td>
+            <td style="padding: 10px">{{SUBJECT}}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; font-weight: bold; vertical-align: top">
+              Message:
+            </td>
+            <td style="padding: 10px; line-height: 1.6">{{MESSAGE}}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div
+        style="
+          text-align: center;
+          margin-top: 30px;
+          padding-top: 20px;
+          border-top: 1px solid #eee;
+        "
+      >
+        <p style="font-size: 12px; color: #999">
+          This is an automated notification from your website's contact form.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

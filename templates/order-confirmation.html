@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Confirmation</title>
+  </head>
+  <body
+    style="
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+      color: #333;
+    "
+  >
+    <div
+      style="
+        max-width: 600px;
+        margin: auto;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <div
+        style="
+          text-align: center;
+          border-bottom: 1px solid #ddd;
+          padding-bottom: 20px;
+          margin-bottom: 20px;
+        "
+      >
+        <h1 style="color: #2c5222; font-size: 24px">
+          Thank You for Your Order!
+        </h1>
+        <p style="font-size: 16px; color: #555">
+          Hi {{CUSTOMER_NAME}}, your order has been confirmed.
+        </p>
+      </div>
+
+      <div style="margin-bottom: 20px">
+        <p style="font-size: 14px; color: #555">
+          <strong>Order ID:</strong> #{{ORDER_ID}} <br />
+          <strong>Order Date:</strong> {{ORDER_DATE}}
+        </p>
+      </div>
+
+      <h2
+        style="
+          font-size: 18px;
+          color: #333;
+          border-bottom: 1px solid #eee;
+          padding-bottom: 10px;
+          margin-bottom: 15px;
+        "
+      >
+        Order Summary
+      </h2>
+
+      <table
+        style="width: 100%; border-collapse: collapse; margin-bottom: 20px"
+      >
+        <thead>
+          <tr style="background-color: #f9f9f9">
+            <th
+              style="
+                padding: 10px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+              "
+            >
+              Product
+            </th>
+            <th
+              style="
+                padding: 10px;
+                text-align: center;
+                border-bottom: 1px solid #ddd;
+              "
+            >
+              Quantity
+            </th>
+            <th
+              style="
+                padding: 10px;
+                text-align: right;
+                border-bottom: 1px solid #ddd;
+              "
+            >
+              Price
+            </th>
+            <th
+              style="
+                padding: 10px;
+                text-align: right;
+                border-bottom: 1px solid #ddd;
+              "
+            >
+              Total
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ITEMS_HTML}}
+        </tbody>
+      </table>
+
+      <div style="text-align: right; margin-bottom: 20px">
+        <p style="font-size: 14px; margin: 5px 0">
+          <strong>Subtotal:</strong> ₹{{SUBTOTAL}}
+        </p>
+        <p style="font-size: 14px; margin: 5px 0">
+          <strong>Shipping:</strong> ₹{{SHIPPING_FEE}}
+        </p>
+        <p
+          style="
+            font-size: 18px;
+            margin: 10px 0 0 0;
+            font-weight: bold;
+            color: #2c5222;
+          "
+        >
+          <strong>Total Amount:</strong> ₹{{TOTAL_AMOUNT}}
+        </p>
+      </div>
+
+      <div style="border-top: 1px solid #eee; padding-top: 20px">
+        <h3 style="font-size: 16px; color: #333">Shipping Address</h3>
+        <address
+          style="
+            font-style: normal;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+          "
+        >
+          {{SHIPPING_ADDRESS_HTML}}
+        </address>
+      </div>
+
+      <div
+        style="
+          text-align: center;
+          margin-top: 30px;
+          padding-top: 20px;
+          border-top: 1px solid #eee;
+        "
+      >
+        <p style="font-size: 12px; color: #999">
+          If you have any questions, please contact our support team.
+        </p>
+        <p style="font-size: 14px; font-weight: bold; color: #2c5222">
+          DhanaLaxmi Foods
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

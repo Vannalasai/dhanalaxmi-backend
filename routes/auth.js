@@ -5,6 +5,7 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const { sendEmail, loadTemplate } = require("../utils/sendEmail");
 const { authMiddleware } = require("../middleware/auth");
+const crypto = require("crypto");
 
 // Register — user must have verified via code first
 router.post("/register", async (req, res) => {
@@ -38,28 +39,44 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Login
+// routes/auth.js లోని login ఫంక్షన్
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
 
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch)
-      return res.status(400).json({ message: "Invalid credentials" });
-
-    if (!user.isVerified)
+    if (!user.isVerified) {
       return res
         .status(400)
         .json({ message: "Please verify your email first" });
+    }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+    // పేలోడ్‌లో 'id' మరియు 'role' రెండింటినీ చేర్చండి
+    const payload = {
+      id: user._id,
+      role: user.role,
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "1d",
     });
-    res.json({ token, user: { id: user._id, email, name: user.name } });
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        mobile: user.mobile,
+        role: user.role,
+      },
+    });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Login Error:", error);
+    res.status(500).json({ message: "Server error during login" });
   }
 });
 
@@ -106,23 +123,87 @@ router.post("/send-verification", async (req, res) => {
   }
 });
 
-// Test email
-router.get("/test-email", async (req, res) => {
+// ఎండ్‌పాయింట్: POST /api/auth/forgot-password
+router.post("/forgot-password", async (req, res) => {
   try {
-    await sendEmail({
-      to: process.env.EMAIL_USER,
-      subject: "Test Email",
-      text: "This is a test email to verify setup.",
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      // యూజర్ లేకపోయినా, సెక్యూరిటీ కోసం సక్సెస్ మెసేజ్ పంపండి
+      return res
+        .status(200)
+        .json({
+          message:
+            "If a user with that email exists, a password reset link has been sent.",
+        });
+    }
+
+    // రీసెట్ టోకెన్ జనరేట్ చేయండి
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    user.passwordResetToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+    user.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 నిమిషాల గడువు
+
+    await user.save();
+
+    // రీసెట్ లింక్ సృష్టించండి
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+
+    const emailHtml = loadTemplate("password-reset.html", {
+      USER_NAME: user.name,
+      RESET_URL: resetUrl,
     });
-    res.status(200).json({ message: "Test email sent" });
+
+    await sendEmail({
+      to: user.email,
+      subject: "Your Password Reset Link for DhanaLaxmi Foods",
+      html: emailHtml,
+    });
+
+    res
+      .status(200)
+      .json({
+        message:
+          "If a user with that email exists, a password reset link has been sent.",
+      });
   } catch (error) {
-    res.status(500).json({ message: "Failed to send test email" });
+    console.error("Forgot Password Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-// Simple health‐check
-router.get("/test", (req, res) => {
-  res.json({ message: "Server is running" });
+// 2. కొత్త పాస్‌వర్డ్‌ను సెట్ చేయడానికి
+// ఎండ్‌పాయింట్: POST /api/auth/reset-password/:token
+router.post("/reset-password/:token", async (req, res) => {
+  try {
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(req.params.token)
+      .digest("hex");
+
+    const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: { $gt: Date.now() }, // టోకెన్ గడువు ముగియలేదని నిర్ధారించుకోండి
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "Token is invalid or has expired." });
+    }
+
+    // కొత్త పాస్‌వర్డ్‌ను సెట్ చేసి, టోకెన్ ఫీల్డ్స్‌ను క్లియర్ చేయండి
+    user.password = req.body.password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+
+    res.status(200).json({ message: "Password has been reset successfully." });
+  } catch (error) {
+    console.error("Reset Password Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 module.exports = router;

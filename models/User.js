@@ -23,6 +23,13 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   // userSchema కు addresses ఫీల్డ్‌ను యాడ్ చేయండి
   addresses: [addressSchema],
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
+  },
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 // Hash password before saving

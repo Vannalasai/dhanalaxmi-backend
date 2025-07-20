@@ -9,10 +9,12 @@ const orderSchema = new mongoose.Schema({
   items: [
     {
       productId: { type: String, required: true },
+      variantId: { type: String, required: true },
       name: { type: String, required: true },
       price: { type: Number, required: true },
       quantity: { type: Number, required: true },
       image: { type: String, required: true },
+      weight: { type: String, required: true }, // << ఈ లైన్‌ను ఇక్కడ జోడించండి
     },
   ],
   shippingAddress: {
